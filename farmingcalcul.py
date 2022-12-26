@@ -68,11 +68,6 @@ class Kiwoom(QAxWidget):
         self.detail_account_mystock()  #계좌평가 잔고내역 요청
 
         self.not_concluded_account() #미체결 요청
-        # self.credit_info_A()#신용가능정보
-        # self.credit_info_B()#신용가능정보
-        # self.credit_info_C()#신용가능정보
-
-
 
 #####################TEST TEST###############################################
         self.read_code()  # 저장된 종목들 불러온다
@@ -147,32 +142,6 @@ class Kiwoom(QAxWidget):
 
         self.detail_account_info_event_loop.exec_()
 
-    # def credit_info_A(self, sPrevNext="0"):
-    #
-    #     self.dynamicCall("SetInputValue(QString, QString)", "신용종목등급구분", "A")
-    #     self.dynamicCall("SetInputValue(QString, QString)", "시장거래구분", "%")
-    #     self.dynamicCall("SetInputValue(QString, QString)", "종목번호", )
-    #     self.dynamicCall("CommRqData(QString, QString, int, QString))", "신용융자 가능종목요청", "opw20016", sPrevNext, self.screen_my_info)
-    #
-    #     self.detail_account_info_event_loop.exec_()
-    #
-    # def credit_info_B(self, sPrevNext="0"):
-    #
-    #     self.dynamicCall("SetInputValue(QString, QString)", "신용종목등급구분", "B")
-    #     self.dynamicCall("SetInputValue(QString, QString)", "시장거래구분", "%")
-    #     self.dynamicCall("SetInputValue(QString, QString)", "종목번호", )
-    #     self.dynamicCall("CommRqData(QString, QString, int, QString))", "신용융자 가능종목요청", "opw20016", sPrevNext, self.screen_my_info)
-    #
-    #     self.detail_account_info_event_loop.exec_()
-    #
-    # def credit_info_C(self, sPrevNext="0"):
-    #
-    #     self.dynamicCall("SetInputValue(QString, QString)", "신용종목등급구분", "C")
-    #     self.dynamicCall("SetInputValue(QString, QString)", "시장거래구분", "%")
-    #     self.dynamicCall("SetInputValue(QString, QString)", "종목번호", )
-    #     self.dynamicCall("CommRqData(QString, QString, int, QString))", "신용융자 가능종목요청", "opw20016", sPrevNext, self.screen_my_info)
-    #
-    #     self.detail_account_info_event_loop.exec_()
 
     def trdata_slot(self, sScrNo, sRQName, sTrCode, sRecordName, sPrevNext):
         '''
@@ -312,20 +281,7 @@ class Kiwoom(QAxWidget):
 
             self.detail_account_info_event_loop.exit()
 
-        # if sRQName == "신용융자 가능종목요청":
-        #     deposit = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "종목코드")
-        #
-        #     print("예수금 %s" % int(deposit))
-        #     # slack.chat.post_message('#stock', "예수금 %s" % int(deposit))
-        #
-        #     self.use_money = int(deposit) * self.use_money_percent
-        #     self.use_money = self.use_money / 2
-        #
-        #     ok_deposit = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "출금가능금액")
-        #     print("출금가능금액 %s" % int(ok_deposit))
-        #     # slack.chat.post_message('#stock', "출금가능금액 %s" % int(ok_deposit))
-        #
-        #     self.detail_account_info_event_loop.exit()
+
 
         ###########################################################################################################
         if sRQName == "주식일봉차트조회":
@@ -374,135 +330,7 @@ class Kiwoom(QAxWidget):
 
                 pass_success = False
 
-                prev_end_price = 0
-                prev_start_price = 0
-                # 300일 데이터가 있는지 체크
-
-                if self.calcul_data == None or len(self.calcul_data) < 500:
-                    print(len(self.calcul_data))
-                    pass_success = False
-
-
-                elif code in self.account_stock_dict:
-
-                    idx = 1
-                    while True:
-                        if len(self.calcul_data) < 500:
-                            print("500일치가 없음1")
-                            break
-
-                        total_price = 0
-                        for value in self.calcul_data[idx:240 + idx]:
-                            total_price += int(value[1])
-                        moving_average_price_prev = total_price / 240
-
-                        if ((int(self.calcul_data[idx][1]) - int(self.calcul_data[idx][5])) / int(self.calcul_data[idx][5])) * 100 > 15 and int(self.calcul_data[idx][5]) < moving_average_price_prev < int(self.calcul_data[idx][1]) and idx <= 240:
-                            print("240일내 15%이상 장대양봉이 있고, 시가 < 240이평선 < 종가")
-
-                            prev_end_price = int(self.calcul_data[idx][1])
-                            prev_start_price = int(self.calcul_data[idx][5])
-
-                            pass_success = True
-                            break
-                        if idx == 241:
-                            print("장대양봉이 없거나 240선에 걸쳐있지않음")
-                            pass_success = True
-                            break
-                        idx += 1
-
-
-                else:
-                    #240일 이상이라면
-                    total_price = 0
-                    for value in self.calcul_data[:240]: #[오늘, 하루전, ...239일전]
-                        total_price += int(value[1])
-
-                    moving_average_price = total_price / 240  #240일 이평선 만들어짐
-
-                    bottom_stock_price = False
-                    check_price_2 = None
-                    check_price_4_4 = None
-
-                    if 2000 < int(self.calcul_data[0][1]) : # or moving_average_price <= int(self.calcul_data[0][1]) < moving_average_price + (moving_average_price * 0.05)
-
-                        print("현재가 2000원 이상")
-                        bottom_stock_price = True
-
-                        check_price_2 = int(self.calcul_data[0][1])  # [1]금일종가
-
-                        check_price_4_4 = int(self.calcul_data[0][2])  # [5]금일거래량
-
-                    if bottom_stock_price == True:
-
-
-                        top_average_price = 0
-
-                        idx = 1
-
-                        while True:
-                            if len(self.calcul_data) < 500:
-                                print("500일치가 없음2")
-
-                                break
-
-                            total_price = 0
-                            for value in self.calcul_data[idx:240+idx]:
-                                total_price += int(value[1])
-                            moving_average_price_prev = total_price / 240
-
-                            #30일간 240이평선 아래 -- 수정가능50~100일간으로
-                            if 20 < idx <= 50 and moving_average_price_prev <= int(self.calcul_data[idx][1]): #int(self.calcul_data[idx][1])
-                                print("20일이전부터 30일내 종가가 240일이평선 위에 있으면 통과 못함")
-
-                                top_average_price = 1
-
-                                break
-                            elif idx == 241:
-                                top_average_price = 2
-                                break
-
-
-                            idx += 1
-
-
-
-                        if top_average_price == 2:
-
-                            price_big_moving = False
-                            idx = 1
-                            while True:
-                                if len(self.calcul_data) < 500:
-                                    print("240일치가 없음3")
-
-                                    break
-
-                                total_price = 0
-                                for value in self.calcul_data[idx:240+idx]:
-                                    total_price += int(value[1])
-                                moving_average_price_prev = total_price / 240
-
-                                cdidx = self.calcul_data[idx]
-                                if ((int(cdidx[1]) - int(cdidx[5])) / int(cdidx[5])) * 100 > 15 and int(cdidx[5]) < moving_average_price_prev < int(cdidx[1]) and idx <= 20:
-                                    print("20일내 15%이상 장대양봉이 있고, 시가 < 240이평선 < 종가_2")
-
-                                    prev_end_price = int(self.calcul_data[idx][1])
-                                    prev_start_price = int(self.calcul_data[idx][5])
-
-                                    price_big_moving = True
-                                    break
-
-                                elif idx == 241:
-                                    print("240일 이내 조건 만족 못함")
-                                    break
-                                idx += 1
-                                   
-                            if price_big_moving == True:
-
-                                if prev_start_price < check_price_2 < prev_end_price and 2000 < check_price_2 < 100000 and (10000 > check_price_2 or 100000 > check_price_2 > 12000) and check_price_4_4 >= 10000 and code not in self.no_stock_dict.keys():
-
-                                    print("장대양봉시가<현재가<종가, 가격2000~200000원, 거래량 10000이상, 제외종목 아님")
-                                    pass_success = True
-
+##############################조건검색################################################################
 
                 if pass_success == True:
                     print("조건부 통과됨")
@@ -512,8 +340,6 @@ class Kiwoom(QAxWidget):
                     f = open("files/condition_farming.txt", "a", encoding="utf8") #a:이어쓴다, w:덮어쓴다
                     f.write("%s\t%s\t%s\t%s\t%s\n" % (code, code_nm, str(self.calcul_data[0][1]), str(prev_start_price), str(prev_end_price)))
                     f.close()
-
-                    # slack.chat.post_message('#stock', " %s 스윙관심종목 수집" % code_nm)
 
                 elif pass_success == False:
                     print("조건부 통과 못함")
