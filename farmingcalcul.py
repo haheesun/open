@@ -158,14 +158,13 @@ class Kiwoom(QAxWidget):
             deposit = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "예수금")
 
             print("예수금 %s" % int(deposit))
-            # slack.chat.post_message('#stock', "예수금 %s" % int(deposit))
+
 
             self.use_money = int(deposit) * self.use_money_percent
             self.use_money = self.use_money / 2
 
             ok_deposit = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "출금가능금액")
             print("출금가능금액 %s" % int(ok_deposit))
-            # slack.chat.post_message('#stock', "출금가능금액 %s" % int(ok_deposit))
 
             self.detail_account_info_event_loop.exit()
 
@@ -176,13 +175,13 @@ class Kiwoom(QAxWidget):
             total_buy_money_result = int(total_buy_money)
 
             print("총매입금액 %s" % total_buy_money_result)
-            # slack.chat.post_message('#stock', "총매입금액 %s" % total_buy_money_result)
+
 
             total_profit_loss_rate = self.dynamicCall("GetCommData(QString, QString, int, QString)", sTrCode, sRQName, 0, "총수익률(%)")
             total_profit_loss_rate_result = float(total_profit_loss_rate)
 
             print("총수익률(%%) : %s" % total_profit_loss_rate_result)
-            # slack.chat.post_message('#stock', "총수익률(%%) : %s" % total_profit_loss_rate_result)
+
 
             rows = self.dynamicCall("GetRepeatCnt(QString, QString)", sTrCode, sRQName)
             cnt = 0
@@ -320,17 +319,13 @@ class Kiwoom(QAxWidget):
 
 
             if sPrevNext == "0" or "2":
-
-            #     self.day_kiwoom_db(code=code, sPrevNext=sPrevNext)
-            #
-            # else:
-
                 print("총 일수 %s" % len(self.calcul_data))
 
 
                 pass_success = False
-
+######################################################################################################
 ##############################조건검색################################################################
+#######################################################################################################
 
                 if pass_success == True:
                     print("조건부 통과됨")
@@ -338,7 +333,7 @@ class Kiwoom(QAxWidget):
                     code_nm = self.dynamicCall("GetMasterCodeName(QString)", code)
 
                     f = open("files/condition_farming.txt", "a", encoding="utf8") #a:이어쓴다, w:덮어쓴다
-                    f.write("%s\t%s\t%s\t%s\t%s\n" % (code, code_nm, str(self.calcul_data[0][1]), str(prev_start_price), str(prev_end_price)))
+                    f.write("%s\t%s\t%s\n" % (code, code_nm, str(self.calcul_data[0][1]))))
                     f.close()
 
                 elif pass_success == False:
@@ -347,7 +342,10 @@ class Kiwoom(QAxWidget):
 
                 self.calcul_data.clear()
                 self.calcullator_event_loop.exit()
-
+                
+######################################################################################################
+##############################조건검색################################################################
+#######################################################################################################
 
     def get_code_list_by_market(self, market_code):
         '''
