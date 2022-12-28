@@ -333,7 +333,7 @@ class Kiwoom(QAxWidget):
                     code_nm = self.dynamicCall("GetMasterCodeName(QString)", code)
 
                     f = open("files/condition_farming.txt", "a", encoding="utf8") #a:이어쓴다, w:덮어쓴다
-                    f.write("%s\t%s\t%s\n" % (code, code_nm, str(self.calcul_data[0][1]))))
+                    f.write("%s\t%s\t%s\n" % (code, code_nm, str(self.calcul_data[0][1])))
                     f.close()
 
                 elif pass_success == False:
@@ -344,7 +344,7 @@ class Kiwoom(QAxWidget):
                 self.calcullator_event_loop.exit()
                 
 ######################################################################################################
-##############################조건검색################################################################
+##############################조건검색 끝################################################################
 #######################################################################################################
 
     def get_code_list_by_market(self, market_code):
